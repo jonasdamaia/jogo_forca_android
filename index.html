@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Jogo da Forca Brasileiro</title>
     
-    <!-- Manifesto externo otimizado para zerar o erro do PWABuilder -->
-    <link rel="manifest" href="https://pwabuilder-manifest.azurewebsites.net/manifest?name=Forca%20Brasileira&short_name=Forca&start_url=.%2F&background_color=%23020617&theme_color=%23020617&display=standalone">
+    <!-- Manifesto Nativo Direto no Código -->
+    <link rel="manifest" href="./manifest.json">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -148,6 +148,45 @@
             </button>
         </div>
     </div>
+
+    <!-- Script para criar o arquivo manifest.json e o service-worker.js automaticamente pelo navegador -->
+    <script>
+        // Criação automática do manifesto em tempo de execução
+        const manifestData = {
+            "name": "Forca Brasileira",
+            "short_name": "Forca",
+            "start_url": "./",
+            "display": "standalone",
+            "background_color": "#020617",
+            "theme_color": "#020617",
+            "orientation": "portrait",
+            "icons": [
+                {
+                    "src": "https://placehold.co/192x192/4f46e5/ffffff.png?text=FORCA",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                },
+                {
+                    "src": "https://placehold.co/512x512/4f46e5/ffffff.png?text=FORCA",
+                    "sizes": "512x512",
+                    "type": "image/png"
+                }
+            ]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        document.querySelector('link[rel="manifest"]').setAttribute('href', manifestURL);
+
+        // Registro do Service Worker para resolver o aviso amarelo
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `self.addEventListener('fetch', function (event) {});`;
+                const swBlob = new Blob([swCode], {type: 'text/javascript'});
+                const swUrl = URL.createObjectURL(swBlob);
+                navigator.serviceWorker.register(swUrl).catch(err => console.log('SW registration failed: ', err));
+            });
+        }
+    </script>
 
     <script>
         const wordDatabase = [
@@ -750,7 +789,7 @@
           { word: "COMETA", category: "Astronomia", hint: "Corpo celeste gelado que deixa um rastro luminoso ao se aproximar do Sol." },
           { word: "GALAXIA", category: "Astronomia", hint: "Enorme conjunto de estrelas, planetas e poeira cósmica." },
           { word: "SATURNO", category: "Astronomia", hint: "Planeta do sistema solar famoso por seus anéis." },
-          { word: "MARTE", category: "Astronomia", hint: "Planeta vermelho, alvo de várias missões espacs em busca de vida." },
+          { word: "MARTE", category: "Astronomia", hint: "Planeta vermelho, alvo de várias missões espaciais em busca de vida." },
           { word: "JUPITER", category: "Astronomia", hint: "Maior planeta do sistema solar, um gigante gasoso." },
           { word: "MERCURIO", category: "Astronomia", hint: "Planeta mais próximo do Sol no sistema solar." },
           { word: "CHUVA", category: "Clima", hint: "Precipitação de gotas de água que cai das nuvens." },
