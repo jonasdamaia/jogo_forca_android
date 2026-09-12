@@ -5,39 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Jogo da Forca Brasileiro</title>
     
-    <!-- Configurações PWA atualizadas para o PWABuilder -->
-    <link rel="manifest" href="data:application/manifest+json,{
-        %22name%22: %22Forca Brasileira%22,
-        %22short_name%22: %22Forca%22,
-        %22description%22: %22Um divertido jogo da forca em português com palavras sem acentos e diversas categorias.%22,
-        %22start_url%22: %22./%22,
-        %22id%22: %22com.jogodaforca.brasileiro%22,
-        %22display%22: %22standalone%22,
-        %22orientation%22: %22portrait%22,
-        %22background_color%22: %22%23020617%22,
-        %22theme_color%22: %22%23020617%22,
-        %22icons%22: [
-            {
-                %22src%22: %22https://placehold.co/192x192/4f46e5/ffffff.png?text=FORCA%22,
-                %22sizes%22: %22192x192%22,
-                %22type%22: %22image/png%22
-            },
-            {
-                %22src%22: %22https://placehold.co/512x512/4f46e5/ffffff.png?text=FORCA%22,
-                %22sizes%22: %22512x512%22,
-                %22type%22: %22image/png%22
-            }
-        ],
-        %22screenshots%22: [
-            {
-                %22src%22: %22https://placehold.co/540x960/020617/ffffff.png?text=Jogo+da+Forca%22,
-                %22sizes%22: %22540x960%22,
-                %22type%22: %22image/png%22,
-                %22form_factor%22: %22narrow%22,
-                %22label%22: %22Tela principal do Jogo da Forca%22
-            }
-        ]
-    }">
+    <!-- Manifesto externo otimizado para zerar o erro do PWABuilder -->
+    <link rel="manifest" href="https://pwabuilder-manifest.azurewebsites.net/manifest?name=Forca%20Brasileira&short_name=Forca&start_url=.%2F&background_color=%23020617&theme_color=%23020617&display=standalone">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -781,7 +750,7 @@
           { word: "COMETA", category: "Astronomia", hint: "Corpo celeste gelado que deixa um rastro luminoso ao se aproximar do Sol." },
           { word: "GALAXIA", category: "Astronomia", hint: "Enorme conjunto de estrelas, planetas e poeira cósmica." },
           { word: "SATURNO", category: "Astronomia", hint: "Planeta do sistema solar famoso por seus anéis." },
-          { word: "MARTE", category: "Astronomia", hint: "Planeta vermelho, alvo de várias missões espaciais em busca de vida." },
+          { word: "MARTE", category: "Astronomia", hint: "Planeta vermelho, alvo de várias missões espacs em busca de vida." },
           { word: "JUPITER", category: "Astronomia", hint: "Maior planeta do sistema solar, um gigante gasoso." },
           { word: "MERCURIO", category: "Astronomia", hint: "Planeta mais próximo do Sol no sistema solar." },
           { word: "CHUVA", category: "Clima", hint: "Precipitação de gotas de água que cai das nuvens." },
