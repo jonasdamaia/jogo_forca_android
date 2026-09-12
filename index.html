@@ -81,7 +81,6 @@
 
     <main class="flex-1 max-w-md w-full mx-auto px-3 py-2 flex flex-col justify-between my-auto">
         
-        <!-- Top Game Panel -->
         <div class="flex flex-col bg-slate-900/60 border border-slate-800/80 rounded-3xl p-3 shadow-2xl backdrop-blur-xl relative overflow-hidden glow-card mb-2">
             <div class="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-28 h-28 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
             
@@ -92,7 +91,6 @@
                 </div>
             </div>
 
-            <!-- SVG Hangman Illustration -->
             <div class="w-full h-28 sm:h-32 flex items-center justify-center my-1">
                 <svg viewBox="0 0 200 220" class="w-full h-full drop-shadow-xl">
                     <line x1="20" y1="205" x2="180" y2="205" stroke="#475569" stroke-width="7" stroke-linecap="round" />
@@ -109,25 +107,21 @@
                 </svg>
             </div>
 
-            <!-- Hint -->
             <div class="text-center w-full bg-slate-950/80 p-2 rounded-2xl border border-slate-800/80 shadow-inner">
                 <p id="hint-text" class="text-[11px] text-slate-300 italic font-medium leading-tight">Carregando dica...</p>
             </div>
         </div>
 
-        <!-- Word Blanks Container -->
         <div class="flex flex-col items-center justify-center my-1 w-full">
             <div id="word-container" class="flex flex-nowrap justify-center items-center gap-1 w-full max-w-full overflow-x-auto py-1 px-1 no-scrollbar">
                 <!-- Preenchido via script -->
             </div>
         </div>
 
-        <!-- Virtual Keyboard -->
         <div id="keyboard-container" class="grid grid-cols-7 gap-1.5 my-1.5">
             <!-- Gerado via script -->
         </div>
 
-        <!-- Controls -->
         <div class="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between">
             <button id="btn-sound" onclick="toggleSound()" class="flex items-center space-x-1.5 px-3 py-2 bg-slate-800/80 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-semibold transition active:scale-95 border border-slate-700/60 shadow-sm">
                 <svg id="sound-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
