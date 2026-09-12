@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#090d16">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Forca Brasileira">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Jogo da Forca Brasileiro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Forca%20Brasileira%22%2C%22short_name%22%3A%22Forca%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23090d16%22%2C%22theme_color%22%3A%22%23090d16%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fplacehold.co%2F192x192%2F6366f1%2Fffffff%3Ftext%3DF%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fplacehold.co%2F512x512%2F6366f1%2Fffffff%3Ftext%3DF%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .title-font {
+            font-family: 'Fredoka', sans-serif;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(99, 102, 241, 0.4); }
+        }
+        .glow-card {
+            animation: pulseGlow 4s infinite ease-in-out;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500 selection:text-white overflow-x-hidden overscroll-none">
+
+    <header class="w-full bg-slate-900/90 backdrop-blur-xl border-b border-slate-800/80 px-4 py-3 shadow-xl sticky top-0 z-20">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+                <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 text-white p-2 rounded-2xl shadow-lg shadow-indigo-500/20 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="title-font text-base font-bold tracking-wide bg-gradient-to-r from-indigo-400 via-cyan-300 to-teal-400 bg-clip-text text-transparent">Forca Brasileira</h1>
+                    <p class="text-[9px] text-slate-400 font-medium">Aplicativo Android</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-2 bg-slate-950/80 px-2.5 py-1.5 rounded-2xl border border-slate-800 shadow-inner">
+                <div class="text-center px-1">
+                    <span class="block text-[8px] uppercase font-bold tracking-wider text-slate-400">Vitórias</span>
+                    <span id="score-wins" class="title-font text-emerald-400 font-bold text-xs">0</span>
+                </div>
+                <div class="h-4 w-[1px] bg-slate-800"></div>
+                <div class="text-center px-1">
+                    <span class="block text-[8px] uppercase font-bold tracking-wider text-slate-400">Erros</span>
+                    <span id="score-losses" class="title-font text-rose-400 font-bold text-xs">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-md w-full mx-auto px-3 py-2 flex flex-col justify-between my-auto">
+        
+        <!-- Top Game Panel -->
+        <div class="flex flex-col bg-slate-900/60 border border-slate-800/80 rounded-3xl p-3 shadow-2xl backdrop-blur-xl relative overflow-hidden glow-card mb-2">
+            <div class="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-28 h-28 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            
+            <div class="flex items-center justify-between w-full mb-1">
+                <span id="category-badge" class="text-[10px] font-bold uppercase tracking-widest text-indigo-300 bg-indigo-950/80 px-2.5 py-0.5 rounded-xl border border-indigo-800/40 shadow-sm">Categoria</span>
+                <div class="bg-slate-950/80 text-slate-300 text-[10px] px-2 py-0.5 rounded-xl border border-slate-800 font-semibold">
+                    Erros: <span id="errors-count" class="font-bold text-rose-400">0</span> / 6
+                </div>
+            </div>
+
+            <!-- SVG Hangman Illustration -->
+            <div class="w-full h-28 sm:h-32 flex items-center justify-center my-1">
+                <svg viewBox="0 0 200 220" class="w-full h-full drop-shadow-xl">
+                    <line x1="20" y1="205" x2="180" y2="205" stroke="#475569" stroke-width="7" stroke-linecap="round" />
+                    <line x1="60" y1="205" x2="60" y2="15" stroke="#475569" stroke-width="7" stroke-linecap="round" />
+                    <line x1="60" y1="15" x2="140" y2="15" stroke="#475569" stroke-width="7" stroke-linecap="round" />
+                    <line x1="140" y1="15" x2="140" y2="50" stroke="#475569" stroke-width="7" stroke-linecap="round" />
+
+                    <circle id="part-head" cx="140" cy="75" r="18" stroke="#38bdf8" stroke-width="5" fill="none" class="transition-all duration-300 opacity-0" />
+                    <line id="part-body" x1="140" y1="93" x2="140" y2="145" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" class="transition-all duration-300 opacity-0" />
+                    <line id="part-left-arm" x1="140" y1="110" x2="110" y2="135" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" class="transition-all duration-300 opacity-0" />
+                    <line id="part-right-arm" x1="140" y1="110" x2="170" y2="135" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" class="transition-all duration-300 opacity-0" />
+                    <line id="part-left-leg" x1="140" y1="145" x2="115" y2="185" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" class="transition-all duration-300 opacity-0" />
+                    <line id="part-right-leg" x1="140" y1="145" x2="165" y2="185" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" class="transition-all duration-300 opacity-0" />
+                </svg>
+            </div>
+
+            <!-- Hint -->
+            <div class="text-center w-full bg-slate-950/80 p-2 rounded-2xl border border-slate-800/80 shadow-inner">
+                <p id="hint-text" class="text-[11px] text-slate-300 italic font-medium leading-tight">Carregando dica...</p>
+            </div>
+        </div>
+
+        <!-- Word Blanks Container -->
+        <div class="flex flex-col items-center justify-center my-1 w-full">
+            <div id="word-container" class="flex flex-nowrap justify-center items-center gap-1 w-full max-w-full overflow-x-auto py-1 px-1 no-scrollbar">
+                <!-- Preenchido via script -->
+            </div>
+        </div>
+
+        <!-- Virtual Keyboard -->
+        <div id="keyboard-container" class="grid grid-cols-7 gap-1.5 my-1.5">
+            <!-- Gerado via script -->
+        </div>
+
+        <!-- Controls -->
+        <div class="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between">
+            <button id="btn-sound" onclick="toggleSound()" class="flex items-center space-x-1.5 px-3 py-2 bg-slate-800/80 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-semibold transition active:scale-95 border border-slate-700/60 shadow-sm">
+                <svg id="sound-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+                <span id="sound-label">Som</span>
+            </button>
+
+            <button onclick="initGame()" class="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition active:scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Nova Palavra</span>
+            </button>
+        </div>
+    </main>
+
+    <div id="game-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="modal-card" class="bg-slate-900 border border-slate-800 rounded-3xl max-w-xs w-full p-5 text-center shadow-2xl transform scale-95 transition-transform duration-300">
+            <div id="modal-icon-container" class="w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center text-2xl shadow-md">
+                🎉
+            </div>
+            <h2 id="modal-title" class="title-font text-xl font-bold mb-1">Parabéns!</h2>
+            <p id="modal-message" class="text-xs text-slate-300 mb-4">Você adivinhou a palavra com sucesso.</p>
+            
+            <div class="bg-slate-950/80 p-3 rounded-2xl mb-4 border border-slate-800/80 shadow-inner">
+                <span class="text-[10px] text-slate-400 block mb-0.5 font-medium">A palavra era:</span>
+                <span id="modal-word-reveal" class="title-font text-lg font-bold text-cyan-400 tracking-wider">PROGRAMACAO</span>
+            </div>
+
+            <button onclick="initGame()" class="w-full py-2.5 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white rounded-xl font-bold shadow-lg shadow-indigo-600/30 transition active:scale-95 text-xs">
+                Jogar Novamente
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const wordDatabase = [
+            { word: "CENOURA", category: "Vegetais", hint: "Raiz alaranjada e crocante, muito usada em saladas e sucos." },
+            { word: "BETERRABA", category: "Vegetais", hint: "Raiz de cor vermelho-arroxeada usada em saladas e sucos." },
+            { word: "ABOBRINHA", category: "Vegetais", hint: "Legume verde alongado usado refogado ou em massas." },
+            { word: "BERINJELA", category: "Vegetais", hint: "Legume roxo alongado usado em pratos assados e à milanesa." },
+            { word: "AMAZONAS", category: "Geografia", hint: "Maior estado brasileiro em extensão territorial." },
+            { word: "BAHIA", category: "Geografia", hint: "Estado nordestino conhecido pelo axé e por Salvador." },
+            { word: "PARANA", category: "Geografia", hint: "Estado sulista onde fica a famosa fronteira das Cataratas do Iguaçu." },
+            { word: "LISBOA", category: "Geografia", hint: "Capital de Portugal, cidade histórica às margens do rio Tejo." },
+            { word: "MADRI", category: "Geografia", hint: "Capital da Espanha, conhecida por seus museus e futebol." },
+            { word: "COLISEU", category: "Monumentos", hint: "Antigo anfiteatro romano usado para lutas de gladiadores." },
+            { word: "CRISTOREDENTOR", category: "Monumentos", hint: "Estátua gigante localizada no topo do Corcovado, no Rio de Janeiro." },
+            { word: "ARQUITETO", category: "Profissoes", hint: "Profissional responsável por projetar edifícios e espaços." },
+            { word: "ASTRONAUTA", category: "Profissoes", hint: "Profissional treinado para viajar e trabalhar no espaço." },
+            { word: "BERMUDA", category: "Vestuario", hint: "Peça de roupa curta que cobre até acima dos joelhos." },
+            { word: "LANTERNA", category: "Objetos", hint: "Aparelho portátil usado para iluminar em locais escuros." },
+            { word: "OXIGENIO", category: "Ciencia", hint: "Gás essencial para a respiração dos seres vivos." },
+            { word: "XADREZ", category: "Jogos", hint: "Jogo de tabuleiro estratégico disputado entre reis, rainhas e peões." },
+            { word: "PORTUGUES", category: "Idiomas", hint: "Idioma oficial do Brasil e de Portugal." },
+            { word: "TSUNAMI", category: "Fenomenos", hint: "Onda gigante geralmente causada por um terremoto no fundo do mar." },
+            { word: "APLICATIVO", category: "Tecnologia", hint: "Programa instalado em celulares ou computadores para uma função específica." },
+            { word: "BRIGADEIRO", category: "Comida", hint: "Doce tradicional brasileiro feito com leite condensado e chocolate." },
+            { word: "CARNAVAL", category: "Cultura", hint: "A maior festa popular de rua do Brasil." },
+            { word: "FUTEBOL", category: "Esportes", hint: "Paixão nacional jogada com uma bola em gramados." },
+            { word: "CAPIVARA", category: "Fauna", hint: "O maior roedor do mundo, muito comum em lagos urbanos brasileiros." }
+        ];
+
+        let availableWords = [];
+        let currentWordObj = {};
+        let guessedLetters = new Set();
+        let wrongErrors = 0;
+        const maxErrors = 6;
+        let scoreWins = 0;
+        let scoreLosses = 0;
+        let soundEnabled = true;
+
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.08);
+                    osc.frequency.setValueAtTime(783.99, now + 0.16);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.linearRampToValueAtTime(100, now + 0.25);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'win') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, index) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.frequency.setValueAtTime(freq, now + index * 0.1);
+                        g.gain.setValueAtTime(0.15, now + index * 0.1);
+                        g.gain.exponentialRampToValueAtTime(0.01, now + index * 0.1 + 0.2);
+                        o.start(now + index * 0.1);
+                        o.stop(now + index * 0.1 + 0.2);
+                    });
+                } else if (type === 'lose') {
+                    const notes = [300, 250, 200, 150];
+                    notes.forEach((freq, index) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.frequency.setValueAtTime(freq, now + index * 0.15);
+                        g.gain.setValueAtTime(0.2, now + index * 0.15);
+                        g.gain.exponentialRampToValueAtTime(0.01, now + index * 0.15 + 0.2);
+                        o.start(now + index * 0.15);
+                        o.stop(now + index * 0.15 + 0.2);
+                    });
+                }
+            } catch (e) {
+                console.warn('Audio warning:', e);
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const label = document.getElementById('sound-label');
+            const icon = document.getElementById('sound-icon');
+            if (soundEnabled) {
+                label.innerText = "Som";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />`;
+            } else {
+                label.innerText = "Mudo";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />`;
+            }
+        }
+
+        function initGame() {
+            if (availableWords.length === 0) {
+                availableWords = [...wordDatabase];
+                availableWords.sort(() => Math.random() - 0.5);
+            }
+
+            currentWordObj = availableWords.pop();
+            guessedLetters.clear();
+            wrongErrors = 0;
+
+            document.getElementById('errors-count').innerText = wrongErrors;
+            document.getElementById('category-badge').innerText = currentWordObj.category;
+            document.getElementById('hint-text').innerText = `Dica: ${currentWordObj.hint}`;
+
+            updateHangmanDrawing();
+            renderWord();
+            renderKeyboard();
+            closeModal();
+        }
+
+        function renderWord() {
+            const container = document.getElementById('word-container');
+            container.innerHTML = '';
+
+            const word = currentWordObj.word;
+            const wordLength = word.length;
+            
+            let boxSizeClass = "w-7 h-9 text-sm sm:w-9 sm:h-12 sm:text-xl";
+            if (wordLength > 8) boxSizeClass = "w-6 h-8 text-xs sm:w-8 sm:h-10 sm:text-lg";
+            if (wordLength > 12) boxSizeClass = "w-5 h-7 text-[11px] sm:w-7 sm:h-9 sm:text-base";
+            
+            for (let i = 0; i < wordLength; i++) {
+                const char = word[i];
+                const isGuessed = guessedLetters.has(char);
+
+                const box = document.createElement('div');
+                box.className = `${boxSizeClass} rounded-lg flex items-center justify-center font-bold border-2 transition-all duration-300 shrink-0 ${
+                    isGuessed 
+                        ? 'bg-slate-900 border-indigo-500/80 text-cyan-300 shadow-md shadow-indigo-500/25 animate-pop' 
+                        : 'bg-slate-950/80 border-slate-800 text-transparent'
+                }`;
+                box.innerText = isGuessed ? char : '_';
+                container.appendChild(box);
+            }
+        }
+
+        function renderKeyboard() {
+            const keyboardContainer = document.getElementById('keyboard-container');
+            keyboardContainer.innerHTML = '';
+
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+
+            alphabet.forEach(letter => {
+                const isGuessed = guessedLetters.has(letter);
+
+                const btn = document.createElement('button');
+                btn.id = `key-${letter}`;
+                btn.className = `py-2.5 rounded-xl font-bold text-xs transition-all duration-200 shadow-md active:scale-95 touch-manipulation ${
+                    isGuessed 
+                        ? 'bg-slate-900/80 text-slate-600 border border-slate-800 cursor-not-allowed opacity-40' 
+                        : 'bg-slate-800/90 active:bg-indigo-600 text-slate-200 border border-slate-700/80 shadow-slate-900/50'
+                }`;
+                btn.innerText = letter;
+                btn.disabled = isGuessed;
+                
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    handleGuess(letter);
+                }, { passive: false });
+                
+                btn.onclick = () => handleGuess(letter);
+                keyboardContainer.appendChild(btn);
+            });
+        }
+
+        function handleGuess(letter) {
+            if (guessedLetters.has(letter) || wrongErrors >= maxErrors) return;
+
+            guessedLetters.add(letter);
+            playSound('click');
+
+            const word = currentWordObj.word;
+
+            if (word.includes(letter)) {
+                playSound('correct');
+                renderWord();
+                checkWinCondition();
+            } else {
+                wrongErrors++;
+                playSound('wrong');
+                document.getElementById('errors-count').innerText = wrongErrors;
+                updateHangmanDrawing();
+                checkLoseCondition();
+            }
+
+            const btn = document.getElementById(`key-${letter}`);
+            if (btn) {
+                btn.disabled = true;
+                if (word.includes(letter)) {
+                    btn.className = 'py-2.5 rounded-xl font-bold text-xs bg-indigo-950/80 text-cyan-300 border border-indigo-800/60 cursor-not-allowed opacity-75 touch-manipulation';
+                } else {
+                    btn.className = 'py-2.5 rounded-xl font-bold text-xs bg-slate-900/90 text-rose-400 border border-rose-950 cursor-not-allowed opacity-50 touch-manipulation';
+                }
+            }
+        }
+
+        function updateHangmanDrawing() {
+            const parts = ['part-head', 'part-body', 'part-left-arm', 'part-right-arm', 'part-left-leg', 'part-right-leg'];
+            parts.forEach((partId, index) => {
+                const el = document.getElementById(partId);
+                if (index < wrongErrors) {
+                    el.classList.remove('opacity-0');
+                    el.classList.add('animate-pop');
+                } else {
+                    el.classList.add('opacity-0');
+                    el.classList.remove('animate-pop');
+                }
+            });
+        }
+
+        function checkWinCondition() {
+            const word = currentWordObj.word;
+            const hasWon = word.split('').every(char => guessedLetters.has(char));
+            if (hasWon) {
+                scoreWins++;
+                document.getElementById('score-wins').innerText = scoreWins;
+                playSound('win');
+                showModal(true);
+            }
+        }
+
+        function checkLoseCondition() {
+            if (wrongErrors >= maxErrors) {
+                scoreLosses++;
+                document.getElementById('score-losses').innerText = scoreLosses;
+                playSound('lose');
+                showModal(false);
+            }
+        }
+
+        function showModal(isWin) {
+            const modal = document.getElementById('game-modal');
+            const modalCard = document.getElementById('modal-card');
+            const iconContainer = document.getElementById('modal-icon-container');
+            const title = document.getElementById('modal-title');
+            const message = document.getElementById('modal-message');
+            const wordReveal = document.getElementById('modal-word-reveal');
+
+            wordReveal.innerText = currentWordObj.word;
+
+            if (isWin) {
+                iconContainer.innerHTML = '🏆';
+                iconContainer.className = 'w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center text-2xl shadow-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400';
+                title.innerText = 'Parabéns!';
+                title.className = 'title-font text-xl font-bold mb-1 text-emerald-400';
+                message.innerText = 'Você acertou todas as letras!';
+            } else {
+                iconContainer.innerHTML = '💀';
+                iconContainer.className = 'w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center text-2xl shadow-lg bg-rose-500/20 border border-rose-500/40 text-rose-400';
+                title.innerText = 'Fim de Jogo!';
+                title.className = 'title-font text-xl font-bold mb-1 text-rose-400';
+                message.innerText = 'Suas tentativas acabaram!';
+            }
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalCard.classList.remove('scale-95');
+            modalCard.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('game-modal');
+            const modalCard = document.getElementById('modal-card');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalCard.classList.add('scale-95');
+            modalCard.classList.remove('scale-100');
+        }
+
+        window.onload = () => {
+            initGame();
+        };
+    </script>
+</body>
+</html>
